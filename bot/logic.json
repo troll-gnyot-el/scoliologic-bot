@@ -1,0 +1,675 @@
+{
+  "themes": [
+    {
+      "id": "t1",
+      "index": "1",
+      "title": "Протезирование какой конечности Вам требуется?",
+      "level": 1,
+      "subthemes": [
+        {
+          "id": "legs",
+          "title": "Ноги",
+          "index": "1.1",
+          "level": 2,
+          "subthemes": [
+            {
+              "id": "legs_amputation_level",
+              "title": "Уровень ампутации",
+              "index": "2",
+              "level": 3,
+              "subthemes": [
+                {
+                  "id": "legs_foot",
+                  "title": "Стопа (сохранен голеностопный сустав)",
+                  "index": "2.1",
+                  "level": 4
+                },
+                {
+                  "id": "legs_shin",
+                  "title": "Голень (сохранен коленный сустав)",
+                  "index": "2.2",
+                  "level": 4
+                },
+                {
+                  "id": "legs_thigh",
+                  "title": "Бедро (сохранен тазобедренный сустав)",
+                  "index": "2.3",
+                  "level": 4
+                },
+                {
+                  "id": "legs_hip_disarticulation",
+                  "title": "Вычленение в тазобедренном суставе (ампутация всей конечности)",
+                  "index": "2.4",
+                  "level": 4
+                }
+              ]
+            },
+            {
+              "id": "legs_questions",
+              "title": "Выберите интересующий Вас вопрос",
+              "index": "3",
+              "level": 3,
+              "subthemes": [
+                {
+                  "id": "legs_care",
+                  "title": "Как ухаживать за культей?",
+                  "index": "3.1",
+                  "level": 4,
+                  "subthemes": [
+                    {
+                      "id": "legs_care_skin",
+                      "title": "Уход за кожей культи",
+                      "index": "3.1.1",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_care_skin",
+                        "legs_shin": "https://example.com/legs_shin_care_skin",
+                        "legs_thigh": "https://example.com/legs_thigh_care_skin",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_care_skin"
+                      }
+                    },
+                    {
+                      "id": "legs_care_massage",
+                      "title": "Самомассаж",
+                      "index": "3.1.2",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_massage",
+                        "legs_shin": "https://example.com/legs_shin_massage",
+                        "legs_thigh": "https://example.com/legs_thigh_massage",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_massage"
+                      }
+                    },
+                    {
+                      "id": "legs_care_bandaging",
+                      "title": "Бинтование культи",
+                      "index": "3.1.3",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_bandaging",
+                        "legs_shin": "https://example.com/legs_shin_bandaging",
+                        "legs_thigh": "https://example.com/legs_thigh_bandaging",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_bandaging"
+                      }
+                    },
+                    {
+                      "id": "legs_care_gymnastics",
+                      "title": "Гимнастика для укрепления мышц",
+                      "index": "3.1.4",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_gymnastics",
+                        "legs_shin": "https://example.com/legs_shin_gymnastics",
+                        "legs_thigh": "https://example.com/legs_thigh_gymnastics",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_gymnastics"
+                      }
+                    },
+                    {
+                      "id": "legs_care_joint_movement",
+                      "title": "Разработка движений в суставе",
+                      "index": "3.1.5",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_joint_movement",
+                        "legs_shin": "https://example.com/legs_shin_joint_movement",
+                        "legs_thigh": "https://example.com/legs_thigh_joint_movement",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_joint_movement"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "legs_get_prosthesis",
+                  "title": "Как получить протез?",
+                  "index": "3.2",
+                  "level": 4,
+                  "subthemes": [
+                    {
+                      "id": "legs_get_mse",
+                      "title": "МСЭ (ВТЭК) и как его пройти",
+                      "index": "3.2.1",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_mse",
+                        "legs_shin": "https://example.com/legs_shin_mse",
+                        "legs_thigh": "https://example.com/legs_thigh_mse",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_mse"
+                      }
+                    },
+                    {
+                      "id": "legs_get_free_prosthesis",
+                      "title": "Как получить хороший протез бесплатно?",
+                      "index": "3.2.2",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_free",
+                        "legs_shin": "https://example.com/legs_shin_free",
+                        "legs_thigh": "https://example.com/legs_thigh_free",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_free"
+                      }
+                    },
+                    {
+                      "id": "legs_get_payment_methods",
+                      "title": "Способы оплаты протеза",
+                      "index": "3.2.3",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_payment",
+                        "legs_shin": "https://example.com/legs_shin_payment",
+                        "legs_thigh": "https://example.com/legs_thigh_payment",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_payment"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "legs_which_prosthesis",
+                  "title": "Какой протез я могу получить?",
+                  "index": "3.3",
+                  "level": 4,
+                  "videos_by_level": {
+                    "legs_foot": "https://example.com/legs_foot_which",
+                    "legs_shin": "https://example.com/legs_shin_which",
+                    "legs_thigh": "https://example.com/legs_thigh_which",
+                    "legs_hip_disarticulation": "https://example.com/legs_hip_which"
+                  }
+                },
+                {
+                  "id": "legs_best_prosthesis",
+                  "title": "Какой протез самый лучший?",
+                  "index": "3.4",
+                  "level": 4,
+                  "videos_by_level": {
+                    "legs_foot": "https://example.com/legs_foot_best",
+                    "legs_shin": "https://example.com/legs_shin_best",
+                    "legs_thigh": "https://example.com/legs_thigh_best",
+                    "legs_hip_disarticulation": "https://example.com/legs_hip_best"
+                  }
+                },
+                {
+                  "id": "legs_prosthesis_components",
+                  "title": "Из чего состоит протез?",
+                  "index": "3.5",
+                  "level": 4,
+                  "subthemes": [
+                    {
+                      "id": "legs_prosthesis_attachment",
+                      "title": "Способы крепления протеза",
+                      "index": "3.5.1",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_attachment",
+                        "legs_shin": "https://example.com/legs_shin_attachment",
+                        "legs_thigh": "https://example.com/legs_thigh_attachment",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_attachment"
+                      }
+                    },
+                    {
+                      "id": "legs_prosthesis_feet",
+                      "title": "Какие стопы бывают",
+                      "index": "3.5.2",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_feet",
+                        "legs_shin": "https://example.com/legs_shin_feet",
+                        "legs_thigh": "https://example.com/legs_thigh_feet",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_feet"
+                      }
+                    },
+                    {
+                      "id": "legs_prosthesis_knees",
+                      "title": "Какие коленки бывают",
+                      "index": "3.5.3",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_knees",
+                        "legs_shin": "https://example.com/legs_shin_knees",
+                        "legs_thigh": "https://example.com/legs_thigh_knees",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_knees"
+                      }
+                    },
+                    {
+                      "id": "legs_prosthesis_appearance",
+                      "title": "Внешний вид протеза",
+                      "index": "3.5.4",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_appearance",
+                        "legs_shin": "https://example.com/legs_shin_appearance",
+                        "legs_thigh": "https://example.com/legs_thigh_appearance",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_appearance"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "legs_prosthesis_problems",
+                  "title": "Проблемы с протезом",
+                  "index": "3.6",
+                  "level": 4,
+                  "subthemes": [
+                    {
+                      "id": "legs_problems_big_socket",
+                      "title": "Что делать, если гильза стала велика, и протез кажется тяжелым",
+                      "index": "3.6.1",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_big_socket",
+                        "legs_shin": "https://example.com/legs_shin_big_socket",
+                        "legs_thigh": "https://example.com/legs_thigh_big_socket",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_big_socket"
+                      }
+                    },
+                    {
+                      "id": "legs_problems_broken_prosthesis",
+                      "title": "Что делать если сломался протез",
+                      "index": "3.6.2",
+                      "level": 5,
+                      "videos_by_level": {
+                        "legs_foot": "https://example.com/legs_foot_broken",
+                        "legs_shin": "https://example.com/legs_shin_broken",
+                        "legs_thigh": "https://example.com/legs_thigh_broken",
+                        "legs_hip_disarticulation": "https://example.com/legs_hip_broken"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "legs_get_prosthesis_scoliologic",
+                  "title": "Как получить протез в Сколиолоджик?",
+                  "index": "3.7",
+                  "level": 4,
+                  "videos_by_level": {
+                    "legs_foot": "https://example.com/legs_foot_scoliologic",
+                    "legs_shin": "https://example.com/legs_shin_scoliologic",
+                    "legs_thigh": "https://example.com/legs_thigh_scoliologic",
+                    "legs_hip_disarticulation": "https://example.com/legs_hip_scoliologic"
+                  }
+                },
+                {
+                  "id": "legs_show_specialists",
+                  "title": "Покажите Ваших специалистов!",
+                  "index": "3.8",
+                  "level": 4,
+                  "videos_by_level": {
+                    "legs_foot": "https://example.com/legs_foot_specialists",
+                    "legs_shin": "https://example.com/legs_shin_specialists",
+                    "legs_thigh": "https://example.com/legs_thigh_specialists",
+                    "legs_hip_disarticulation": "https://example.com/legs_hip_specialists"
+                  }
+                },
+                {
+                  "id": "custom_1751671846740",
+                  "title": "Jane 41",
+                  "level": 4,
+                  "videos_by_level": {
+                    "legs_foot": "spines.com",
+                    "legs_shin": "youtube.com",
+                    "legs_thigh": "telegram.org",
+                    "legs_hip_disarticulation": "example.jane",
+                    "arms_hand": "haha.ha",
+                    "arms_forearm": "lala.lol",
+                    "arms_shoulder": "gogog.go"
+                  },
+                  "subthemes": []
+                },
+                {
+                  "id": "custom_1751675309411",
+                  "title": "gaga gagaga",
+                  "level": 4,
+                  "videos_by_level": {
+                    "legs_hip_disarticulation": "hhhhhhhhh.fu",
+                    "arms_hand": "ggggggg.ka",
+                    "arms_forearm": "al.ru"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "arms",
+          "title": "Руки",
+          "index": "1.2",
+          "level": 2,
+          "subthemes": [
+            {
+              "id": "arms_amputation_level",
+              "title": "Уровень ампутации",
+              "index": "2",
+              "level": 3,
+              "subthemes": [
+                {
+                  "id": "arms_hand",
+                  "title": "Кисть",
+                  "index": "2.1",
+                  "level": 4
+                },
+                {
+                  "id": "arms_forearm",
+                  "title": "Предплечье",
+                  "index": "2.2",
+                  "level": 4
+                },
+                {
+                  "id": "arms_shoulder",
+                  "title": "Плечо",
+                  "index": "2.3",
+                  "level": 4
+                },
+                {
+                  "id": "arms_shoulder_disarticulation",
+                  "title": "Вычленение в плечевом суставе (ампутация всей конечности)",
+                  "index": "2.4",
+                  "level": 4
+                }
+              ]
+            },
+            {
+              "id": "arms_questions",
+              "title": "Выберите интересующий Вас вопрос",
+              "level": 3,
+              "index": "3",
+              "subthemes": [
+                {
+                  "id": "arms_care",
+                  "title": "Как ухаживать за культей?",
+                  "level": 4,
+                  "index": "3.1",
+                  "subthemes": [
+                    {
+                      "id": "arms_care_skin",
+                      "title": "Уход за кожей культи",
+                      "index": "3.1.1",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_care_skin",
+                        "arms_forearm": "https://example.com/arms_forearm_care_skin",
+                        "arms_shoulder": "https://example.com/arms_shoulder_care_skin",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_care_skin"
+                      }
+                    },
+                    {
+                      "id": "arms_care_massage",
+                      "title": "Самомассаж",
+                      "index": "3.1.2",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_massage",
+                        "arms_forearm": "https://example.com/arms_forearm_massage",
+                        "arms_shoulder": "https://example.com/arms_shoulder_massage",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_massage"
+                      }
+                    },
+                    {
+                      "id": "arms_care_bandaging",
+                      "title": "Бинтование культи",
+                      "index": "3.1.3",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_bandaging",
+                        "arms_forearm": "https://example.com/arms_forearm_bandaging",
+                        "arms_shoulder": "https://example.com/arms_shoulder_bandaging",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_bandaging"
+                      }
+                    },
+                    {
+                      "id": "arms_care_gymnastics",
+                      "title": "Гимнастика для укрепления мышц",
+                      "index": "3.1.4",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_gymnastics",
+                        "arms_forearm": "https://example.com/arms_forearm_gymnastics",
+                        "arms_shoulder": "https://example.com/arms_shoulder_gymnastics",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_gymnastics"
+                      }
+                    },
+                    {
+                      "id": "arms_care_joint_movement",
+                      "title": "Разработка движений в суставе",
+                      "index": "3.1.5",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_joint_movement",
+                        "arms_forearm": "https://example.com/arms_forearm_joint_movement",
+                        "arms_shoulder": "https://example.com/arms_shoulder_joint_movement",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_joint_movement"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "arms_get_prosthesis",
+                  "title": "Как получить протез?",
+                  "index": "3.2",
+                  "level": 4,
+                  "subthemes": [
+                    {
+                      "id": "arms_get_mse",
+                      "title": "МСЭ (ВТЭК) и как его пройти",
+                      "index": "3.2.1",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_mse",
+                        "arms_forearm": "https://example.com/arms_forearm_mse",
+                        "arms_shoulder": "https://example.com/arms_shoulder_mse",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_mse"
+                      }
+                    },
+                    {
+                      "id": "arms_get_free_prosthesis",
+                      "title": "Как получить хороший протез бесплатно?",
+                      "index": "3.2.2",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_free",
+                        "arms_forearm": "https://example.com/arms_forearm_free",
+                        "arms_shoulder": "https://example.com/arms_shoulder_free",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_free"
+                      }
+                    },
+                    {
+                      "id": "arms_get_payment_methods",
+                      "title": "Способы оплаты протеза",
+                      "index": "3.2.3",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_payment",
+                        "arms_forearm": "https://example.com/arms_forearm_payment",
+                        "arms_shoulder": "https://example.com/arms_shoulder_payment",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_payment"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "arms_which_prosthesis",
+                  "title": "Какой протез я могу получить?",
+                  "index": "3.3",
+                  "level": 4,
+                  "subthemes": [
+                    {
+                      "id": "arms_which_cosmetic",
+                      "title": "Косметический",
+                      "index": "3.3.1",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_which_cosmetic",
+                        "arms_forearm": "https://example.com/arms_forearm_which_cosmetic",
+                        "arms_shoulder": "https://example.com/arms_shoulder_which_cosmetic",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_which_cosmetic"
+                      }
+                    },
+                    {
+                      "id": "arms_which_traction",
+                      "title": "Тяговый",
+                      "index": "3.3.2",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_which_traction",
+                        "arms_forearm": "https://example.com/arms_forearm_which_traction",
+                        "arms_shoulder": "https://example.com/arms_shoulder_which_traction",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_which_traction"
+                      }
+                    },
+                    {
+                      "id": "arms_which_working",
+                      "title": "Рабочий",
+                      "index": "3.3.3",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_which_working",
+                        "arms_forearm": "https://example.com/arms_forearm_which_working",
+                        "arms_shoulder": "https://example.com/arms_shoulder_which_working",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_which_working"
+                      }
+                    },
+                    {
+                      "id": "arms_which_bionic",
+                      "title": "Бионический",
+                      "index": "3.3.4",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_which_bionic",
+                        "arms_forearm": "https://example.com/arms_forearm_which_bionic",
+                        "arms_shoulder": "https://example.com/arms_shoulder_which_bionic",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_which_bionic"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "arms_best_prosthesis",
+                  "title": "Какой протез самый лучший?",
+                  "index": "3.4",
+                  "level": 4,
+                  "videos_by_level": {
+                    "arms_hand": "https://example.com/arms_hand_best",
+                    "arms_forearm": "https://example.com/arms_forearm_best",
+                    "arms_shoulder": "https://example.com/arms_shoulder_best",
+                    "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_best"
+                  }
+                },
+                {
+                  "id": "arms_prosthesis_components",
+                  "title": "Из чего состоит протез?",
+                  "index": "3.5",
+                  "level": 4,
+                  "subthemes": [
+                    {
+                      "id": "arms_prosthesis_attachment",
+                      "title": "Способы крепления протеза",
+                      "index": "3.5.1",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_attachment",
+                        "arms_forearm": "https://example.com/arms_forearm_attachment",
+                        "arms_shoulder": "https://example.com/arms_shoulder_attachment",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_attachment"
+                      }
+                    },
+                    {
+                      "id": "arms_prosthesis_hands",
+                      "title": "Какие кисти бывают",
+                      "index": "3.5.2",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_hands",
+                        "arms_forearm": "https://example.com/arms_forearm_hands",
+                        "arms_shoulder": "https://example.com/arms_shoulder_hands",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_hands"
+                      }
+                    },
+                    {
+                      "id": "arms_prosthesis_elbows",
+                      "title": "Какие локти бывают",
+                      "index": "3.5.3",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_elbows",
+                        "arms_forearm": "https://example.com/arms_forearm_elbows",
+                        "arms_shoulder": "https://example.com/arms_shoulder_elbows",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_elbows"
+                      }
+                    },
+                    {
+                      "id": "arms_prosthesis_appearance",
+                      "title": "Внешний вид протеза",
+                      "index": "3.5.4",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_appearance",
+                        "arms_forearm": "https://example.com/arms_forearm_appearance",
+                        "arms_shoulder": "https://example.com/arms_shoulder_appearance",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_appearance"
+                      }
+                    }
+                  ],
+                  "videos_by_level": {}
+                },
+                {
+                  "id": "arms_prosthesis_problems",
+                  "title": "Проблемы с протезом",
+                  "index": "3.6",
+                  "level": 4,
+                  "subthemes": [
+                    {
+                      "id": "arms_problems_socket_size",
+                      "title": "Что делать, если гильза стала велика или мала",
+                      "index": "3.6.1",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_socket_size",
+                        "arms_forearm": "https://example.com/arms_forearm_socket_size",
+                        "arms_shoulder": "https://example.com/arms_shoulder_socket_size",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_socket_size"
+                      }
+                    },
+                    {
+                      "id": "arms_problems_broken_prosthesis",
+                      "title": "Что делать если сломался протез",
+                      "index": "3.6.2",
+                      "level": 5,
+                      "videos_by_level": {
+                        "arms_hand": "https://example.com/arms_hand_broken",
+                        "arms_forearm": "https://example.com/arms_forearm_broken",
+                        "arms_shoulder": "https://example.com/arms_shoulder_broken",
+                        "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_broken"
+                      }
+                    }
+                  ],
+                  "videos_by_level": {}
+                },
+                {
+                  "id": "arms_get_prosthesis_scoliologic",
+                  "title": "Как получить протез в Сколиолоджик?",
+                  "index": "3.7",
+                  "level": 4,
+                  "videos_by_level": {
+                    "arms_hand": "https://example.com/arms_hand_scoliologic",
+                    "arms_forearm": "https://example.com/arms_forearm_scoliologic",
+                    "arms_shoulder": "https://example.com/arms_shoulder_scoliologic",
+                    "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_scoliologic"
+                  }
+                },
+                {
+                  "id": "arms_show_specialists",
+                  "title": "Покажите Ваших специалистов!",
+                  "index": "3.8",
+                  "level": 4,
+                  "videos_by_level": {
+                    "arms_hand": "https://example.com/arms_hand_specialists",
+                    "arms_forearm": "https://example.com/arms_forearm_specialists",
+                    "arms_shoulder": "https://example.com/arms_shoulder_specialists",
+                    "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_specialists"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
