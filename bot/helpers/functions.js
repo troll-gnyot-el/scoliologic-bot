@@ -1,6 +1,4 @@
 import {ADMIN_USERNAMES, LIMBS} from './consts.js'
-import {adminStates} from "./stateController.js";
-import fs from "fs";
 
 // --- Вспомогательные функции ---
 
@@ -54,31 +52,6 @@ export function getAllLimbLevels() {
     "legs_foot", "legs_shin", "legs_thigh", "legs_hip_disarticulation",
     "arms_hand", "arms_forearm", "arms_shoulder", "arms_shoulder_disarticulation"
   ];
-}
-
-/*// Рекурсивный поиск темы по ID
-export function findThemeById(themes, id) {
-  if (!themes || !Array.isArray(themes)) return null;
-
-  for (const theme of themes) {
-    if (theme.id === id) return theme;
-    if (theme.subthemes && theme.subthemes.length > 0) {
-      const found = findThemeById(theme.subthemes, id);
-      if (found) return found;
-    }
-  }
-  return null;
-}*/
-
-// --- Рекурсивная генерация кнопок для выбора подтемы ---
-// helpers/functions.js - добавить/обновить функции
-
-export function generateSubthemeButtons(subthemes) {
-  if (!subthemes || !Array.isArray(subthemes)) return [];
-  return subthemes.map(theme => [{
-    text: theme.title,
-    callback_data: `admin_edit_theme_${theme.id}`
-  }]);
 }
 
 // --- Генерация кнопок ---

@@ -62,10 +62,12 @@
                       "index": "3.1.1",
                       "level": 5,
                       "videos_by_level": {
-                        "legs_foot": "https://example.com/legs_foot_care_skin",
                         "legs_shin": "https://example.com/legs_shin_care_skin",
                         "legs_thigh": "https://example.com/legs_thigh_care_skin",
                         "legs_hip_disarticulation": "https://example.com/legs_hip_care_skin"
+                      },
+                      "files_by_level": {
+                        "legs_foot": "BAACAgIAAxkBAAIBNGhsczssjd0mAAHV3rvLSSwM3cdb5wACjJYAAm-5YEtXuiZNXmrExTYE"
                       }
                     },
                     {
@@ -271,15 +273,6 @@
                         "legs_thigh": "https://example.com/legs_thigh_broken",
                         "legs_hip_disarticulation": "https://example.com/legs_hip_broken"
                       }
-                    },
-                    {
-                      "id": "custom_1751931738285",
-                      "title": "sonya",
-                      "level": 5,
-                      "videos_by_level": {
-                        "legs_hip_disarticulation": "spi.co"
-                      },
-                      "subthemes": []
                     }
                   ]
                 },
@@ -305,31 +298,6 @@
                     "legs_shin": "https://example.com/legs_shin_specialists",
                     "legs_thigh": "https://example.com/legs_thigh_specialists",
                     "legs_hip_disarticulation": "https://example.com/legs_hip_specialists"
-                  }
-                },
-                {
-                  "id": "custom_1751671846740",
-                  "title": "Jane 41",
-                  "level": 4,
-                  "videos_by_level": {
-                    "legs_foot": "spines.com",
-                    "legs_shin": "youtube.com",
-                    "legs_thigh": "may.so",
-                    "legs_hip_disarticulation": "example.jane",
-                    "arms_hand": "haha.ha",
-                    "arms_forearm": "lala.lol",
-                    "arms_shoulder": "gogog.go"
-                  },
-                  "subthemes": []
-                },
-                {
-                  "id": "custom_1751675309411",
-                  "title": "gaga gagaga",
-                  "level": 4,
-                  "videos_by_level": {
-                    "legs_hip_disarticulation": "hhhhhhhhh.fu",
-                    "arms_hand": "ggggggg.ka",
-                    "arms_forearm": "al.ru"
                   }
                 }
               ]
@@ -473,9 +441,11 @@
                       "level": 5,
                       "videos_by_level": {
                         "arms_hand": "https://example.com/arms_hand_free",
-                        "arms_forearm": "https://example.com/arms_forearm_free",
                         "arms_shoulder": "https://example.com/arms_shoulder_free",
                         "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_free"
+                      },
+                      "files_by_level": {
+                        "arms_forearm": "BAACAgIAAxkBAAIBS2hsdA7XrSoQnzgRPHdzV_eXY1gEAALIlgACb7lgSzuY3SgTd18aNgQ"
                       }
                     },
                     {
@@ -645,25 +615,7 @@
                         "arms_forearm": "https://example.com/arms_forearm_broken",
                         "arms_shoulder": "https://example.com/arms_shoulder_broken",
                         "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_broken"
-                      },
-                      "subthemes": [
-                        {
-                          "id": "custom_1751934254909",
-                          "title": "Myau",
-                          "level": 6,
-                          "videos_by_level": {
-                            "legs_foot": "so.so",
-                            "legs_shin": "so.so",
-                            "legs_thigh": "so.so",
-                            "legs_hip_disarticulation": "so.so",
-                            "arms_hand": "so.so",
-                            "arms_forearm": "so.so",
-                            "arms_shoulder": "so.so",
-                            "arms_shoulder_disarticulation": "so.so"
-                          },
-                          "subthemes": []
-                        }
-                      ]
+                      }
                     }
                   ],
                   "videos_by_level": {}

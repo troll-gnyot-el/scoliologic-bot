@@ -174,15 +174,35 @@ bot.on("callback_query", async (callbackQuery) => {
   }
 
   // Выбор конкретного вопроса с видео по уровню ампутации
-  if (state.limb && state.amputationLevel && theme.videos_by_level) {
+  if (state.limb && state.amputationLevel && (theme.videos_by_level || theme.files_by_level)) {
     pushState(chatId, theme.id);
 
-    const videoUrl = theme.videos_by_level[state.amputationLevel];
-    if (videoUrl) {
-      await bot.sendMessage(chatId, `*${theme.title}*\n\n[Смотреть видео](${videoUrl})`, {
-        parse_mode: "Markdown",
-        disable_web_page_preview: false,
-      });
+    // Проверяем сначала загруженные файлы, потом ссылки
+    let videoContent = null;
+    let isFile = false;
+
+    if (theme.files_by_level && theme.files_by_level[state.amputationLevel]) {
+      videoContent = theme.files_by_level[state.amputationLevel];
+      isFile = true;
+    } else if (theme.videos_by_level && theme.videos_by_level[state.amputationLevel]) {
+      videoContent = theme.videos_by_level[state.amputationLevel];
+      isFile = false;
+    }
+
+    if (videoContent) {
+      if (isFile) {
+        // Отправляем загруженное видео по file_id
+        await bot.sendVideo(chatId, videoContent, {
+          caption: `*${theme.title}*`,
+          parse_mode: "Markdown"
+        });
+      } else {
+        // Отправляем ссылку на видео
+        await bot.sendMessage(chatId, `*${theme.title}*\n\n[Смотреть видео](${videoContent})`, {
+          parse_mode: "Markdown",
+          disable_web_page_preview: false,
+        });
+      }
     } else {
       await bot.sendMessage(chatId, `Видео для выбранного уровня ампутации отсутствует.`);
     }
