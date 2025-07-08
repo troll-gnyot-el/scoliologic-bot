@@ -9,99 +9,76 @@ export function isAdmin(userName) {
   return ADMIN_USERNAMES.includes(userName);
 }
 
-export function getAllLimbLevels() {
-  const arr = [];
-  for (const limb in LIMBS) {
-    for (const level of LIMBS[limb].levels) {
-      arr.push({ limb, level: level.id, title: level.title });
-    }
-  }
-  return arr;
-}
-
-// --- Рекурсивная генерация кнопок для добавления новой подтемы ---
 export function generateAddSubthemeButtons(subthemes, prefix = "") {
-  let buttons = subthemes.map(t => [
-    { text: prefix + t.title, callback_data: `admin_add_subtheme_to_${t.id}` }
-  ]);
-  // также рекурсивно добавлять кнопки для всех вложенных
-  subthemes.forEach(t => {
-    if (t.subthemes && t.subthemes.length > 0) {
-      buttons = buttons.concat(generateAddSubthemeButtons(t.subthemes, prefix + "— "));
+  if (!subthemes || !Array.isArray(subthemes)) return [];
+
+  const buttons = [];
+  subthemes.forEach(theme => {
+    buttons.push([{
+      text: prefix + theme.title,
+      callback_data: `admin_add_subtheme_to_${theme.id}`
+    }]);
+
+    if (theme.subthemes && theme.subthemes.length > 0) {
+      buttons.push(...generateAddSubthemeButtons(theme.subthemes, prefix + "  "));
     }
   });
+
   return buttons;
 }
 
-export function getLimbLevelByIdx(idx) {
-  return getAllLimbLevels()[idx];
-}
-
 export function getLimbLevelKeyByIdx(idx) {
-  const { limb, level } = getLimbLevelByIdx(idx);
-  return level;
+  const levels = [
+    "legs_foot", "legs_shin", "legs_thigh", "legs_hip_disarticulation",
+    "arms_hand", "arms_forearm", "arms_shoulder", "arms_shoulder_disarticulation"
+  ];
+  return levels[idx] || null;
 }
 
-export async function askNextVideo(bot, chatId, state, idx) {
-  const allLevels = getAllLimbLevels();
-  if (idx >= allLevels.length) {
-    // --- Сохраняем подтему ---
-    const logic = logicLoader.getLogic();
-    const limb = state.limb;
-    const parentId = state.parentId;
+export function getLimbLevelByIdx(idx) {
+  const levels = [
+    { limb: "legs", level: "legs_foot", title: "Стопа" },
+    { limb: "legs", level: "legs_shin", title: "Голень" },
+    { limb: "legs", level: "legs_thigh", title: "Бедро" },
+    { limb: "legs", level: "legs_hip_disarticulation", title: "Вычленение в тазобедренном суставе" },
+    { limb: "arms", level: "arms_hand", title: "Кисть" },
+    { limb: "arms", level: "arms_forearm", title: "Предплечье" },
+    { limb: "arms", level: "arms_shoulder", title: "Плечо" },
+    { limb: "arms", level: "arms_shoulder_disarticulation", title: "Вычленение в плечевом суставе" }
+  ];
+  return levels[idx] || null;
+}
 
-    // Найти родительскую подтему
-    const limbTheme = logic.themes[0].subthemes.find(t => t.id === limb);
-    const questionsSection = limbTheme?.subthemes.find(t => t.id === `${limb}_questions`);
-    let parentTheme = parentId === questionsSection.id
-        ? questionsSection
-        : logicLoader.findThemeById(questionsSection.subthemes, parentId);
+export function getAllLimbLevels() {
+  return [
+    "legs_foot", "legs_shin", "legs_thigh", "legs_hip_disarticulation",
+    "arms_hand", "arms_forearm", "arms_shoulder", "arms_shoulder_disarticulation"
+  ];
+}
 
-    if (!parentTheme) {
-      await bot.sendMessage(chatId, "Ошибка: родительская подтема не найдена.");
-      adminStates.set(chatId, { mode: "main_menu" });
-      return;
+/*// Рекурсивный поиск темы по ID
+export function findThemeById(themes, id) {
+  if (!themes || !Array.isArray(themes)) return null;
+
+  for (const theme of themes) {
+    if (theme.id === id) return theme;
+    if (theme.subthemes && theme.subthemes.length > 0) {
+      const found = findThemeById(theme.subthemes, id);
+      if (found) return found;
     }
-    // Формируем videos_by_level
-    const videos_by_level = {};
-    for (const key in state.videos) {
-      if (state.videos[key]) videos_by_level[key] = state.videos[key];
-    }
-    const newSubtheme = {
-      id: `custom_${Date.now()}`,
-      title: state.subtheme.title,
-      level: (parentTheme.level || 3) + 1,
-      videos_by_level,
-      subthemes: []
-    };
-    if (!parentTheme.subthemes) parentTheme.subthemes = [];
-    parentTheme.subthemes.push(newSubtheme);
-    fs.writeFileSync(logicLoader.filePath, JSON.stringify(logic, null, 2), "utf-8");
-    await bot.sendMessage(chatId, `Подтема "${state.subtheme.title}" успешно добавлена!`);
-    adminStates.set(chatId, { mode: "main_menu" });
-  } else {
-    const { limb, level, title } = getLimbLevelByIdx(idx);
-    state.mode = "add_video_loop";
-    state.videoIdx = idx;
-    adminStates.set(chatId, state);
-    await bot.sendMessage(chatId,
-        `Добавить видео для "${LIMBS[limb].name}" — "${title}"?\nОтправьте ссылку или "-" чтобы пропустить.`,
-        {
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: "Пропустить", callback_data: `admin_skip_video_${idx}` }]
-            ]
-          }
-        }
-    );
   }
-}
+  return null;
+}*/
 
 // --- Рекурсивная генерация кнопок для выбора подтемы ---
-export function generateSubthemeButtons(subthemes, prefix = "") {
-  return subthemes.map(t => [
-    { text: prefix + t.title, callback_data: `admin_edit_theme_${t.id}` }
-  ]);
+// helpers/functions.js - добавить/обновить функции
+
+export function generateSubthemeButtons(subthemes) {
+  if (!subthemes || !Array.isArray(subthemes)) return [];
+  return subthemes.map(theme => [{
+    text: theme.title,
+    callback_data: `admin_edit_theme_${theme.id}`
+  }]);
 }
 
 // --- Генерация кнопок ---

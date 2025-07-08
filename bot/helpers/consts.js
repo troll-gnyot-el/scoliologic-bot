@@ -8,9 +8,9 @@ export const LIMBS = {
   legs: {
     name: "Ноги",
     levels: [
-      { id: "legs_foot", title: "Стопа" },
-      { id: "legs_shin", title: "Голень" },
-      { id: "legs_thigh", title: "Бедро" },
+      { id: "legs_foot", title: "Стопа (сохранен голеностопный сустав)" },
+      { id: "legs_shin", title: "Голень (сохранен коленный сустав)" },
+      { id: "legs_thigh", title: "Бедро (сохранен тазобедренный сустав)" },
       { id: "legs_hip_disarticulation", title: "Вычленение в тазобедренном суставе" }
     ]
   },
@@ -24,5 +24,6 @@ export const LIMBS = {
     ]
   }
 };
+
 
 export const ADMIN_USERNAMES = ["WebDwarf", "SonyaScoliologic"];

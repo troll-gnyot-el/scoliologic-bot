@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 
 const logicFilePath = path.join(__dirname, "logic.json");
 const logicLoader = new LogicLoader(logicFilePath);
-
+global.logicLoader = logicLoader;
 const bot = new TelegramApi(process.env.TOKEN, OPTIONS);
 
 bot.onText(/\/hand/, async (msg) => {
@@ -25,7 +25,6 @@ bot.onText(/\/hand/, async (msg) => {
 bot.onText(/\/leg/, async (msg) => {
 
 });
-// todo: vodelit' prohod po temam v otdelniy block
 
 // --- Admin logic ---
 adminPanelLogic(bot, logicLoader, logicFilePath);

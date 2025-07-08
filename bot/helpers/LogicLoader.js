@@ -27,12 +27,14 @@ class LogicLoader {
         return this.logic;
     }
 
-    // Рекурсивный поиск темы по id
-    findThemeById(id, themes = null) {
-        if (!themes) themes = this.logic?.themes || [];
+    // Рекурсивный поиск темы по ID
+    findThemeById(id, themes) {
+        if (!themes) themes = this.logic?.themes;
+        if (!themes || !Array.isArray(themes)) return null;
+
         for (const theme of themes) {
             if (theme.id === id) return theme;
-            if (theme.subthemes) {
+            if (theme.subthemes && theme.subthemes.length > 0) {
                 const found = this.findThemeById(id, theme.subthemes);
                 if (found) return found;
             }
@@ -40,14 +42,23 @@ class LogicLoader {
         return null;
     }
 
-    findThemeByPath(themes, path) {
-        let current = { subthemes: themes };
-        for (const id of path) {
-            current = (current.subthemes || []).find(t => t.id === id);
-            if (!current) return null;
+    // Рекурсивный поиск темы по path
+/*    findThemeByPath(themes, path) {
+        let current = themes;
+
+        for (const pathId of path) {
+            const found = current.find(t => t.id === pathId);
+            if (!found) return null;
+
+            if (pathId === path[path.length - 1]) {
+                return found;
+            }
+
+            current = found.subthemes || [];
         }
-        return current;
-    }
+
+        return null;
+    }*/
 }
 
 export default LogicLoader;
