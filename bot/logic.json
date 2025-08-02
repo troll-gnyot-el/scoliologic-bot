@@ -145,9 +145,11 @@
                       "level": 5,
                       "videos_by_level": {
                         "legs_foot": "https://example.com/legs_foot_free",
-                        "legs_shin": "https://example.com/legs_shin_free",
                         "legs_thigh": "https://example.com/legs_thigh_free",
                         "legs_hip_disarticulation": "https://example.com/legs_hip_free"
+                      },
+                      "files_by_level": {
+                        "legs_shin": "BAACAgIAAxkBAAIB5GiA5jEO0wABJ1eb0yeDeB3O4qFE5gACo3cAAlxeCEgJB0izfT5-czYE"
                       }
                     },
                     {
@@ -360,10 +362,12 @@
                       "index": "3.1.1",
                       "level": 5,
                       "videos_by_level": {
-                        "arms_hand": "https://example.com/arms_hand_care_skin",
                         "arms_forearm": "https://example.com/arms_forearm_care_skin",
                         "arms_shoulder": "https://example.com/arms_shoulder_care_skin",
                         "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_care_skin"
+                      },
+                      "files_by_level": {
+                        "arms_hand": "BAACAgIAAxkBAAIBwGiA4FDCuWWVYtBNJ-ItAQhVN3ffAAJOdwACXF4ISAJdPuzcgp55NgQ"
                       }
                     },
                     {
@@ -617,8 +621,7 @@
                         "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_broken"
                       }
                     }
-                  ],
-                  "videos_by_level": {}
+                  ]
                 },
                 {
                   "id": "arms_get_prosthesis_scoliologic",
@@ -642,6 +645,15 @@
                     "arms_forearm": "https://example.com/arms_forearm_specialists",
                     "arms_shoulder": "https://example.com/arms_shoulder_specialists",
                     "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_specialists"
+                  }
+                },
+                {
+                  "id": "custom_1754133411562",
+                  "title": "Meu",
+                  "level": 4,
+                  "subthemes": [],
+                  "videos_by_level": {
+                    "arms_forearm": "sj.su"
                   }
                 }
               ]

@@ -41,24 +41,6 @@ class LogicLoader {
         }
         return null;
     }
-
-    // Рекурсивный поиск темы по path
-/*    findThemeByPath(themes, path) {
-        let current = themes;
-
-        for (const pathId of path) {
-            const found = current.find(t => t.id === pathId);
-            if (!found) return null;
-
-            if (pathId === path[path.length - 1]) {
-                return found;
-            }
-
-            current = found.subthemes || [];
-        }
-
-        return null;
-    }*/
 }
 
 export default LogicLoader;

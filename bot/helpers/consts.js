@@ -1,4 +1,6 @@
-// выяснить, что значит эта опция и какие ещё есть
+import dotenv from 'dotenv';
+dotenv.config();
+
 export const OPTIONS = {
   polling: true,
   cancellation: false
@@ -25,5 +27,15 @@ export const LIMBS = {
   }
 };
 
+// Menu commands
+export const DEFAULT_COMMANDS = [
+  { command: '/start', description: 'Запустить бота' },
+  { command: '/hand', description: 'Ампутация руки' },
+  { command: '/leg', description: 'Ампутация ноги' },
+];
 
-export const ADMIN_USERNAMES = ["WebDwarf", "SonyaScoliologic"];
+export const ADMIN_COMMANDS = [
+  { command: '/admin', description: 'Админ команды' },
+];
+
+export const ADMIN_USERNAMES = process.env.ADMINS?.split(',') || [];

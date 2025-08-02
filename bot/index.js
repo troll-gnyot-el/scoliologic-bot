@@ -1,49 +1,70 @@
 import TelegramApi from "node-telegram-bot-api";
 import path from "path";
-import dotenv from 'dotenv';
 import { fileURLToPath } from "url";
 import LogicLoader from "./helpers/LogicLoader.js";
-import { OPTIONS } from "./helpers/consts.js";
-import { generateButtons, formatThemeMessage } from "./helpers/functions.js";
+import { OPTIONS, DEFAULT_COMMANDS } from "./helpers/consts.js";
+import {generateButtons, formatThemeMessage, navigateToAmputationLevel} from "./helpers/functions.js";
 import { userStates, pushState, popState } from "./helpers/stateController.js";
 import { adminPanelLogic } from "./logic/adminPanel.js";
+import fs from "fs";
 
+// CONFIGURE .ENV FILE
+import dotenv from 'dotenv';
 dotenv.config();
 
+// CONFIGURE BOT LOGIC STATE
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const logicFilePath = path.join(__dirname, "logic.json");
 const logicLoader = new LogicLoader(logicFilePath);
 global.logicLoader = logicLoader;
+
 const bot = new TelegramApi(process.env.TOKEN, OPTIONS);
 
-bot.onText(/\/hand/, async (msg) => {
+bot.setMyCommands(DEFAULT_COMMANDS, { scope: { type: 'default' } })
+    .then(() => console.log('Общие команды установлены'))
+    .catch(err => console.error('Ошибка:', err));
 
-});
+bot.onText(/\/hand/, async (msg) =>
+  // const chatId = msg.chat.id;
+  await navigateToAmputationLevel(bot, msg.chat.id, "arms", logicLoader)
+);
 
-bot.onText(/\/leg/, async (msg) => {
-
-});
+bot.onText(/\/leg/, async (msg) =>
+  // const chatId = msg.chat.id;
+  await navigateToAmputationLevel(bot, msg.chat.id, "legs", logicLoader)
+);
 
 // --- Admin logic ---
 adminPanelLogic(bot, logicLoader, logicFilePath);
 
 bot.onText(/\/start/, async (msg) => {
   const chatId = msg.chat.id;
+
   const logic = logicLoader.getLogic();
   if (!logic) {
     await bot.sendMessage(chatId, "Извините, логика бота недоступна. Попробуйте позже.");
     return;
   }
+
   const rootTheme = logic.themes.find((t) => t.id === "t1");
   if (!rootTheme) {
     await bot.sendMessage(chatId, "Ошибка в логике бота: корневая тема не найдена.");
     return;
   }
+
   userStates.set(chatId, { history: [rootTheme.id], limb: null, amputationLevel: null });
 
+  const photo = fs.createReadStream(path.join(__dirname, 'images', 'welcome.png'))
+  const caption = `*Вас приветствует информационный бот *[scoliologic.ru](https://scoliologic.ru)*.*`;
   const buttons = generateButtons(rootTheme.subthemes);
+
+  await bot.sendPhoto(chatId, photo, {
+    caption: caption,
+    parse_mode: 'Markdown'  // Включает форматирование (Markdown или 'HTML' для альтернативы)
+  })
+  .catch(err => console.error('Ошибка отправки фото:', err));
+
   await bot.sendMessage(chatId, formatThemeMessage(rootTheme) + "Выберите конечность:", {
     reply_markup: {
       inline_keyboard: buttons,
@@ -108,6 +129,7 @@ bot.on("callback_query", async (callbackQuery) => {
   const state = userStates.get(chatId) || { history: [], limb: null, amputationLevel: null };
 
   // Выбор конечности
+/*
   if (theme.id === "legs" || theme.id === "arms") {
     state.limb = theme.id;
     state.amputationLevel = null;
@@ -132,6 +154,12 @@ bot.on("callback_query", async (callbackQuery) => {
 
     userStates.set(chatId, state);
     await bot.answerCallbackQuery(callbackQuery.id);
+    return;
+  }
+*/
+
+  if (theme.id === "legs" || theme.id === "arms") {
+    await navigateToAmputationLevel(bot, chatId, theme.id, logicLoader, callbackQuery);
     return;
   }
 
@@ -222,11 +250,6 @@ bot.on("callback_query", async (callbackQuery) => {
       },
       parse_mode: "Markdown",
       disable_web_page_preview: true,
-    });
-  } else if (theme.video) {
-    await bot.sendMessage(chatId, formatThemeMessage(theme) + `[Смотреть видео](${theme.video})`, {
-      parse_mode: "Markdown",
-      disable_web_page_preview: false,
     });
   } else {
     await bot.sendMessage(chatId, `По теме "${theme.title}" нет дополнительной информации.`);
