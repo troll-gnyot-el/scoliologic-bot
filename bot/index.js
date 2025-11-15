@@ -2,14 +2,15 @@ import TelegramApi from "node-telegram-bot-api";
 import path from "path";
 import { fileURLToPath } from "url";
 import LogicLoader from "./helpers/LogicLoader.js";
-import { OPTIONS, DEFAULT_COMMANDS } from "./helpers/consts.js";
-import {generateButtons, formatThemeMessage, navigateToAmputationLevel} from "./helpers/functions.js";
-import { userStates, pushState, popState } from "./helpers/stateController.js";
+import { DEFAULT_COMMANDS, OPTIONS } from "./helpers/consts.js";
+import { formatThemeMessage, generateButtons, navigateToAmputationLevel } from "./helpers/functions.js";
+import { popState, pushState, userStates } from "./helpers/stateController.js";
 import { adminPanelLogic } from "./logic/adminPanel.js";
 import fs from "fs";
 
 // CONFIGURE .ENV FILE
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 // CONFIGURE BOT LOGIC STATE
@@ -120,13 +121,58 @@ bot.on("callback_query", async (callbackQuery) => {
     return;
   }
 
+  const state = userStates.get(chatId) || { history: [], limb: null, amputationLevel: null };
+
+  // Обработка возврата к вопросам
+  if (data === "legs_questions" || data === "arms_questions") {
+    state.limb = data === "legs_questions" ? "legs" : "arms";
+    // Сохраняем amputationLevel если он был установлен
+    // Если нет, нужно будет его установить заново
+    
+    const questionsTheme = logicLoader.findThemeById(data);
+    if (!questionsTheme) {
+      await bot.sendMessage(chatId, "Ошибка: вопросы не найдены.");
+      await bot.answerCallbackQuery(callbackQuery.id);
+      return;
+    }
+
+    // Восстанавливаем историю до уровня вопросов
+    const history = state.history || [];
+    // Находим индекс уровня ампутации в истории
+    const amputationIndex = history.findIndex(id => 
+      id === "legs_foot" || id === "legs_shin" || id === "legs_thigh" || id === "legs_hip_disarticulation" ||
+      id === "arms_hand" || id === "arms_forearm" || id === "arms_shoulder" || id === "arms_shoulder_disarticulation"
+    );
+    
+    if (amputationIndex !== -1) {
+      state.amputationLevel = history[amputationIndex];
+      // Обрезаем историю до уровня вопросов
+      state.history = history.slice(0, amputationIndex + 1);
+      pushState(chatId, data);
+    } else {
+      // Если уровня ампутации нет в истории, просто добавляем вопросы
+      pushState(chatId, data);
+    }
+
+    const buttons = generateButtons(questionsTheme.subthemes, true);
+    await bot.sendMessage(chatId, formatThemeMessage(questionsTheme) + "Выберите интересующий Вас вопрос:", {
+      reply_markup: {
+        inline_keyboard: buttons,
+      },
+      parse_mode: "Markdown",
+      disable_web_page_preview: true,
+    });
+
+    userStates.set(chatId, state);
+    await bot.answerCallbackQuery(callbackQuery.id);
+    return;
+  }
+
   const theme = logicLoader.findThemeById(data);
   if (!theme) {
     // await bot.answerCallbackQuery(callbackQuery.id, { text: "Тема не найдена." });
     return;
   }
-
-  const state = userStates.get(chatId) || { history: [], limb: null, amputationLevel: null };
 
   // Выбор конечности
 /*
@@ -218,17 +264,39 @@ bot.on("callback_query", async (callbackQuery) => {
     }
 
     if (videoContent) {
+      // Формируем текст с описанием, если оно есть для данного уровня
+      let captionText = `*${theme.title}*`;
+      const description = theme.description_by_level?.[state.amputationLevel];
+      if (description && description.trim()) {
+        captionText += `\n\n${description}`;
+      }
+
+      // Получаем ID темы с вопросами для кнопки возврата
+      const questionsThemeId = state.limb + "_questions";
+      
       if (isFile) {
         // Отправляем загруженное видео по file_id
         await bot.sendVideo(chatId, videoContent, {
-          caption: `*${theme.title}*`,
-          parse_mode: "Markdown"
+          caption: captionText,
+          parse_mode: "Markdown",
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: "🔙 Вернуться к вопросам", callback_data: questionsThemeId }]
+            ]
+          }
         });
       } else {
         // Отправляем ссылку на видео
-        await bot.sendMessage(chatId, `*${theme.title}*\n\n[Смотреть видео](${videoContent})`, {
+        let messageText = captionText;
+        messageText += `\n\n[Смотреть видео](${videoContent})`;
+        await bot.sendMessage(chatId, messageText, {
           parse_mode: "Markdown",
           disable_web_page_preview: false,
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: "🔙 Вернуться к вопросам", callback_data: questionsThemeId }]
+            ]
+          }
         });
       }
     } else {
@@ -252,7 +320,27 @@ bot.on("callback_query", async (callbackQuery) => {
       disable_web_page_preview: true,
     });
   } else {
-    await bot.sendMessage(chatId, `По теме "${theme.title}" нет дополнительной информации.`);
+    // Если это конечная тема (без подтем), показываем описание и кнопку возврата
+    let messageText = `*${theme.title}*`;
+    if (theme.description && theme.description.trim()) {
+      messageText += `\n\n${theme.description}`;
+    } else {
+      messageText += `\n\nПо теме "${theme.title}" нет дополнительной информации.`;
+    }
+
+    // Добавляем кнопку возврата, если мы на уровне вопросов
+    const buttons = [];
+    if (state.limb && state.amputationLevel) {
+      const questionsThemeId = state.limb + "_questions";
+      buttons.push([{ text: "🔙 Вернуться к вопросам", callback_data: questionsThemeId }]);
+    }
+
+    await bot.sendMessage(chatId, messageText, {
+      parse_mode: "Markdown",
+      reply_markup: buttons.length > 0 ? {
+        inline_keyboard: buttons
+      } : undefined
+    });
   }
 
   userStates.set(chatId, state);

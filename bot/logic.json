@@ -646,15 +646,6 @@
                     "arms_shoulder": "https://example.com/arms_shoulder_specialists",
                     "arms_shoulder_disarticulation": "https://example.com/arms_shoulder_disarticulation_specialists"
                   }
-                },
-                {
-                  "id": "custom_1754133411562",
-                  "title": "Meu",
-                  "level": 4,
-                  "subthemes": [],
-                  "videos_by_level": {
-                    "arms_forearm": "sj.su"
-                  }
                 }
               ]
             }

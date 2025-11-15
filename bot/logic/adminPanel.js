@@ -5,10 +5,13 @@ import {
     getLimbLevelByIdx,
     generateEditNavigationButtons,
     generateAddNavigationButtons,
+    generateDeleteNavigationButtons,
     buildStructureText,
     askNextVideo,
     escapeMarkdownV2,
-    splitLongMessage
+    splitLongMessage,
+    findParentTheme,
+    buildDeleteInfo
 } from "../helpers/functions.js";
 import fs from "fs";
 import { adminStates } from "../helpers/stateController.js";
@@ -49,6 +52,7 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                 inline_keyboard: [
                     [{ text: "📹 Добавить/заменить видео", callback_data: "admin_edit_video" }],
                     [{ text: "➕ Создать новую подтему", callback_data: "admin_new_subtheme" }],
+                    [{ text: "🗑️ Удалить тему", callback_data: "admin_delete_theme" }],
                     [{ text: "📋 Просмотр структуры", callback_data: "admin_view_structure" }]
                 ]
             },
@@ -93,15 +97,15 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
 
                 fs.writeFileSync(logicFilePath, JSON.stringify(logic, null, 2), "utf-8");
 
-                await bot.sendMessage(chatId, "✅ Видеофайл успешно загружен и сохранен!", {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: "🏠 Главное меню", callback_data: "admin_main_menu" }]
-                        ]
-                    }
-                });
-
-                adminStates.set(chatId, { mode: "main_menu" });
+                // Спрашиваем про описание
+                state.mode = "edit_video_ask_description";
+                adminStates.set(chatId, state);
+                await bot.sendMessage(chatId, 
+                    "✅ Видеофайл успешно загружен и сохранен!\n\n" +
+                    "📝 Хотите добавить или изменить описание к этому видео?\n" +
+                    "Введите описание или \"-\" чтобы пропустить:",
+                    { parse_mode: "Markdown" }
+                );
                 return;
             }
 
@@ -113,7 +117,18 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                 const levelKey = getLimbLevelKeyByIdx(idx);
                 if (levelKey) {
                     state.files[levelKey] = msg.video.file_id;
-                    await askNextVideo(bot, chatId, state, idx + 1, logicLoader, logicFilePath);
+                    // Спрашиваем описание для этого уровня
+                    state.mode = "add_video_description";
+                    state.currentLevelKey = levelKey;
+                    adminStates.set(chatId, state);
+                    const levelData = getLimbLevelByIdx(idx);
+                    const limbName = levelData.limb === "legs" ? "Ноги" : "Руки";
+                    await bot.sendMessage(chatId,
+                        `✅ Видео загружено для ${limbName} - ${levelData.title}!\n\n` +
+                        `📝 Хотите добавить описание к этому видео?\n` +
+                        `Введите описание или \"-\" чтобы пропустить:`,
+                        { parse_mode: "Markdown" }
+                    );
                 }
                 return;
             }
@@ -318,6 +333,7 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
 
                 const currentVideo = theme.videos_by_level?.[levelId] || null;
                 const currentFile = theme.files_by_level?.[levelId] || null;
+                const currentDescription = theme.description_by_level?.[levelId] || null;
                 const levelInfo = getLimbLevelByIdx(getAllLimbLevels().indexOf(levelId));
 
                 // Экранируем все специальные символы
@@ -336,14 +352,21 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                 if (currentFile) {
                     msg += `*Текущий файл:* загружен\n\n`;
                 }
+                if (currentDescription) {
+                    const safeDesc = escapeMarkdownV2(currentDescription);
+                    msg += `*Текущее описание:*\n${safeDesc}\n\n`;
+                } else {
+                    msg += `*Описание:* отсутствует\n\n`;
+                }
 
-                msg += `Выберите способ обновления видео:`;
+                msg += `Выберите действие:`;
 
                 await bot.sendMessage(chatId, msg, {
                     reply_markup: {
                         inline_keyboard: [
                             [{ text: "🎬 Загрузить видеофайл", callback_data: "admin_upload_file" }],
                             [{ text: "🔗 Ввести ссылку", callback_data: "admin_enter_url" }],
+                            [{ text: "📝 Редактировать описание", callback_data: "admin_edit_description" }],
                             [{ text: "❌ Удалить видео", callback_data: "admin_delete_video" }],
                             [{ text: "🔙 Назад", callback_data: `admin_edit_limb_${state.limb}` }]
                         ]
@@ -380,6 +403,32 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                 return;
             }
 
+            if (data === "admin_edit_description") {
+                state.mode = "edit_description_enter";
+                adminStates.set(chatId, state);
+
+                const logic = logicLoader.getLogic();
+                if (!logic) {
+                    await bot.sendMessage(chatId, "❌ Ошибка загрузки логики.");
+                    await bot.answerCallbackQuery(cbq.id);
+                    return;
+                }
+
+                const theme = logicLoader.findThemeById(state.editThemeId, logic.themes);
+                const levelInfo = getLimbLevelByIdx(getAllLimbLevels().indexOf(state.editLevelId));
+                const currentDesc = theme?.description_by_level?.[state.editLevelId] || "";
+
+                await bot.sendMessage(chatId, 
+                    `📝 **Редактирование описания**\n\n` +
+                    `Уровень: ${levelInfo ? levelInfo.title : state.editLevelId}\n` +
+                    `Текущее описание: ${currentDesc || "(отсутствует)"}\n\n` +
+                    `Введите новое описание или \"-\" чтобы удалить:`,
+                    { parse_mode: "Markdown" }
+                );
+                await bot.answerCallbackQuery(cbq.id);
+                return;
+            }
+
             if (data === "admin_delete_video") {
                 const logic = logicLoader.getLogic();
                 if (!logic) {
@@ -396,10 +445,14 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                     if (theme.files_by_level && theme.files_by_level[state.editLevelId]) {
                         delete theme.files_by_level[state.editLevelId];
                     }
+                    // Также удаляем описание для этого уровня
+                    if (theme.description_by_level && theme.description_by_level[state.editLevelId]) {
+                        delete theme.description_by_level[state.editLevelId];
+                    }
 
                     fs.writeFileSync(logicFilePath, JSON.stringify(logic, null, 2), "utf-8");
 
-                    await bot.sendMessage(chatId, "✅ Видео удалено!", {
+                    await bot.sendMessage(chatId, "✅ Видео и описание удалены!", {
                         reply_markup: {
                             inline_keyboard: [
                                 [{ text: "🏠 Главное меню", callback_data: "admin_main_menu" }]
@@ -552,6 +605,7 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                 state.mode = "enter_subtheme_title";
                 state.videos = {};
                 state.files = {};
+                state.descriptions = {};
                 adminStates.set(chatId, state);
 
                 await bot.sendMessage(chatId, "✏️ **Введите название новой подтемы:**");
@@ -617,7 +671,197 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                 state.videos[levelKey] = "";
                 state.files[levelKey] = "";
 
+                // Пропускаем описание и переходим к следующему видео
                 await askNextVideo(bot, chatId, state, idx + 1, logicLoader, logicFilePath);
+                await bot.answerCallbackQuery(cbq.id);
+                return;
+            }
+
+            // --- Удаление темы ---
+            if (data === "admin_delete_theme") {
+                state = { mode: "delete_theme_choose_limb" };
+                adminStates.set(chatId, state);
+
+                await bot.sendMessage(chatId, "🗑️ **Удаление темы**\n\nВыберите конечность:", {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "🦵 Ноги", callback_data: "admin_delete_limb_legs" }],
+                            [{ text: "🦾 Руки", callback_data: "admin_delete_limb_arms" }],
+                            [{ text: "🏠 Главное меню", callback_data: "admin_main_menu" }]
+                        ]
+                    },
+                    parse_mode: "Markdown"
+                });
+                await bot.answerCallbackQuery(cbq.id);
+                return;
+            }
+
+            // --- Выбор конечности для удаления темы ---
+            if (data.startsWith("admin_delete_limb_")) {
+                const limb = data.replace("admin_delete_limb_", "");
+                state = { mode: "delete_theme_navigate", limb, deletePath: [limb] };
+                adminStates.set(chatId, state);
+
+                const logic = logicLoader.getLogic();
+                if (!logic) {
+                    await bot.sendMessage(chatId, "❌ Ошибка загрузки логики.");
+                    return;
+                }
+
+                const limbTheme = logicLoader.findThemeById(limb, logic.themes);
+                const questionsTheme = logicLoader.findThemeById(`${limb}_questions`, limbTheme?.subthemes || []);
+
+                if (!questionsTheme) {
+                    await bot.sendMessage(chatId, "❌ Раздел вопросов не найден.");
+                    return;
+                }
+
+                state.deletePath.push(questionsTheme.id);
+                adminStates.set(chatId, state);
+
+                const buttons = generateDeleteNavigationButtons(questionsTheme.subthemes || []);
+                buttons.push([{ text: "🔙 Назад", callback_data: "admin_delete_theme" }]);
+
+                const limbName = limb === "legs" ? "Ноги" : "Руки";
+                await bot.sendMessage(chatId, `🗑️ **${limbName} - Вопросы**\n\nВыберите тему для удаления:`, {
+                    reply_markup: { inline_keyboard: buttons },
+                    parse_mode: "Markdown"
+                });
+                await bot.answerCallbackQuery(cbq.id);
+                return;
+            }
+
+            // --- Навигация по темам для удаления ---
+            if (data.startsWith("admin_delete_nav_")) {
+                const themeId = data.replace("admin_delete_nav_", "");
+                const logic = logicLoader.getLogic();
+                if (!logic) {
+                    await bot.sendMessage(chatId, "❌ Ошибка загрузки логики.");
+                    return;
+                }
+
+                const theme = logicLoader.findThemeById(themeId, logic.themes);
+                if (!theme) {
+                    await bot.sendMessage(chatId, "❌ Ошибка: тема не найдена.");
+                    return;
+                }
+
+                state.deletePath.push(themeId);
+                adminStates.set(chatId, state);
+
+                if (theme.subthemes && theme.subthemes.length > 0) {
+                    const buttons = generateDeleteNavigationButtons(theme.subthemes);
+                    buttons.push([{ text: "🗑️ Удалить эту тему", callback_data: `admin_delete_confirm_${themeId}` }]);
+                    buttons.push([{ text: "🔙 Назад", callback_data: `admin_delete_back` }]);
+
+                    await bot.sendMessage(chatId, `📁 **${theme.title}**\n\nВыберите тему для удаления:`, {
+                        reply_markup: { inline_keyboard: buttons },
+                        parse_mode: "Markdown"
+                    });
+                } else {
+                    // Конечная тема - показываем подтверждение удаления
+                    state.deleteThemeId = themeId;
+                    adminStates.set(chatId, state);
+
+                    const deleteInfo = buildDeleteInfo(theme, logicLoader);
+                    await bot.sendMessage(chatId, `⚠️ **Подтверждение удаления**\n\n${deleteInfo}\n\nВы уверены, что хотите удалить эту тему?`, {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: "✅ Да, удалить", callback_data: `admin_delete_confirm_${themeId}` }],
+                                [{ text: "❌ Отмена", callback_data: `admin_delete_back` }]
+                            ]
+                        },
+                        parse_mode: "Markdown"
+                    });
+                }
+                await bot.answerCallbackQuery(cbq.id);
+                return;
+            }
+
+            // --- Кнопка "Назад" в навигации удаления ---
+            if (data === "admin_delete_back") {
+                if (state.deletePath && state.deletePath.length > 2) {
+                    state.deletePath.pop();
+                    const parentId = state.deletePath[state.deletePath.length - 1];
+
+                    const logic = logicLoader.getLogic();
+                    if (!logic) {
+                        await bot.sendMessage(chatId, "❌ Ошибка загрузки логики.");
+                        return;
+                    }
+
+                    const parentTheme = logicLoader.findThemeById(parentId, logic.themes);
+                    if (!parentTheme) {
+                        await bot.sendMessage(chatId, "❌ Ошибка: родительская тема не найдена.");
+                        return;
+                    }
+
+                    const buttons = generateDeleteNavigationButtons(parentTheme.subthemes || []);
+                    buttons.push([{ text: "🔙 Назад", callback_data: `admin_delete_back` }]);
+
+                    await bot.sendMessage(chatId, `📁 **${parentTheme.title}**\n\nВыберите тему для удаления:`, {
+                        reply_markup: { inline_keyboard: buttons },
+                        parse_mode: "Markdown"
+                    });
+                } else {
+                    // Возврат к выбору конечности
+                    await bot.sendMessage(chatId, "🗑️ **Удаление темы**\n\nВыберите конечность:", {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: "🦵 Ноги", callback_data: "admin_delete_limb_legs" }],
+                                [{ text: "🦾 Руки", callback_data: "admin_delete_limb_arms" }],
+                                [{ text: "🏠 Главное меню", callback_data: "admin_main_menu" }]
+                            ]
+                        },
+                        parse_mode: "Markdown"
+                    });
+                }
+                await bot.answerCallbackQuery(cbq.id);
+                return;
+            }
+
+            // --- Подтверждение удаления темы ---
+            if (data.startsWith("admin_delete_confirm_")) {
+                const themeId = data.replace("admin_delete_confirm_", "");
+                const logic = logicLoader.getLogic();
+                if (!logic) {
+                    await bot.sendMessage(chatId, "❌ Ошибка загрузки логики.");
+                    return;
+                }
+
+                const theme = logicLoader.findThemeById(themeId, logic.themes);
+                if (!theme) {
+                    await bot.sendMessage(chatId, "❌ Ошибка: тема не найдена.");
+                    return;
+                }
+
+                // Находим родительскую тему и удаляем из её subthemes
+                const parentTheme = findParentTheme(themeId, logic.themes, null);
+                if (!parentTheme) {
+                    await bot.sendMessage(chatId, "❌ Ошибка: не удалось найти родительскую тему.");
+                    return;
+                }
+
+                if (parentTheme.subthemes) {
+                    const index = parentTheme.subthemes.findIndex(t => t.id === themeId);
+                    if (index !== -1) {
+                        parentTheme.subthemes.splice(index, 1);
+                        fs.writeFileSync(logicFilePath, JSON.stringify(logic, null, 2), "utf-8");
+
+                        await bot.sendMessage(chatId, `✅ Тема "${theme.title}" успешно удалена!`, {
+                            reply_markup: {
+                                inline_keyboard: [
+                                    [{ text: "🏠 Главное меню", callback_data: "admin_main_menu" }]
+                                ]
+                            }
+                        });
+                        adminStates.set(chatId, { mode: "main_menu" });
+                    } else {
+                        await bot.sendMessage(chatId, "❌ Ошибка: тема не найдена в списке подтем.");
+                    }
+                } else {
+                    await bot.sendMessage(chatId, "❌ Ошибка: у родительской темы нет подтем.");
+                }
                 await bot.answerCallbackQuery(cbq.id);
                 return;
             }
@@ -630,6 +874,7 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                         inline_keyboard: [
                             [{ text: "📹 Добавить/заменить видео", callback_data: "admin_edit_video" }],
                             [{ text: "➕ Создать новую подтему", callback_data: "admin_new_subtheme" }],
+                            [{ text: "🗑️ Удалить тему", callback_data: "admin_delete_theme" }],
                             [{ text: "📋 Просмотр структуры", callback_data: "admin_view_structure" }]
                         ]
                     },
@@ -682,6 +927,7 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                             ]
                         }
                     });
+                    adminStates.set(chatId, { mode: "main_menu" });
                 } else {
                     theme.videos_by_level[state.editLevelId] = msg.text;
 
@@ -691,7 +937,50 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                     }
 
                     fs.writeFileSync(logicFilePath, JSON.stringify(logic, null, 2), "utf-8");
-                    await bot.sendMessage(chatId, "✅ Ссылка на видео обновлена!", {
+                    
+                    // Спрашиваем про описание
+                    state.mode = "edit_video_ask_description";
+                    adminStates.set(chatId, state);
+                    await bot.sendMessage(chatId, 
+                        "✅ Ссылка на видео обновлена!\n\n" +
+                        "📝 Хотите добавить или изменить описание к этому видео?\n" +
+                        "Введите описание или \"-\" чтобы пропустить:",
+                        { parse_mode: "Markdown" }
+                    );
+                }
+                return;
+            }
+
+            // --- Ввод описания после редактирования видео ---
+            if (state.mode === "edit_description_enter") {
+                const logic = logicLoader.getLogic();
+                if (!logic) {
+                    await bot.sendMessage(chatId, "❌ Ошибка загрузки логики.");
+                    adminStates.set(chatId, { mode: "main_menu" });
+                    return;
+                }
+
+                const theme = logicLoader.findThemeById(state.editThemeId, logic.themes);
+                if (!theme) {
+                    await bot.sendMessage(chatId, "❌ Ошибка: тема не найдена.");
+                    adminStates.set(chatId, { mode: "main_menu" });
+                    return;
+                }
+
+                if (!theme.description_by_level) theme.description_by_level = {};
+
+                if (msg.text === "-") {
+                    delete theme.description_by_level[state.editLevelId];
+                    await bot.sendMessage(chatId, "✅ Описание удалено!", {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: "🏠 Главное меню", callback_data: "admin_main_menu" }]
+                            ]
+                        }
+                    });
+                } else {
+                    theme.description_by_level[state.editLevelId] = msg.text;
+                    await bot.sendMessage(chatId, "✅ Описание обновлено!", {
                         reply_markup: {
                             inline_keyboard: [
                                 [{ text: "🏠 Главное меню", callback_data: "admin_main_menu" }]
@@ -699,6 +988,42 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                         }
                     });
                 }
+
+                fs.writeFileSync(logicFilePath, JSON.stringify(logic, null, 2), "utf-8");
+                adminStates.set(chatId, { mode: "main_menu" });
+                return;
+            }
+
+            // --- Ввод описания после добавления/замены видео ---
+            if (state.mode === "edit_video_ask_description") {
+                const logic = logicLoader.getLogic();
+                if (!logic) {
+                    await bot.sendMessage(chatId, "❌ Ошибка загрузки логики.");
+                    adminStates.set(chatId, { mode: "main_menu" });
+                    return;
+                }
+
+                const theme = logicLoader.findThemeById(state.editThemeId, logic.themes);
+                if (!theme) {
+                    await bot.sendMessage(chatId, "❌ Ошибка: тема не найдена.");
+                    adminStates.set(chatId, { mode: "main_menu" });
+                    return;
+                }
+
+                if (!theme.description_by_level) theme.description_by_level = {};
+
+                if (msg.text !== "-") {
+                    theme.description_by_level[state.editLevelId] = msg.text;
+                }
+
+                fs.writeFileSync(logicFilePath, JSON.stringify(logic, null, 2), "utf-8");
+                await bot.sendMessage(chatId, "✅ Все изменения сохранены!", {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "🏠 Главное меню", callback_data: "admin_main_menu" }]
+                        ]
+                    }
+                });
                 adminStates.set(chatId, { mode: "main_menu" });
                 return;
             }
@@ -710,6 +1035,7 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
                 state.videoIdx = 0;
                 if (!state.videos) state.videos = {};
                 if (!state.files) state.files = {};
+                if (!state.descriptions) state.descriptions = {};
                 adminStates.set(chatId, state);
 
                 await askNextVideo(bot, chatId, state, 0, logicLoader, logicFilePath);
@@ -723,9 +1049,40 @@ export function adminPanelLogic(bot, logicLoader, logicFilePath) {
 
                 const levelKey = getLimbLevelKeyByIdx(idx);
                 if (levelKey) {
-                    state.videos[levelKey] = msg.text === "-" ? "" : msg.text;
-                    await askNextVideo(bot, chatId, state, idx + 1, logicLoader, logicFilePath);
+                    if (msg.text === "-") {
+                        state.videos[levelKey] = "";
+                        // Пропускаем описание и переходим к следующему видео
+                        await askNextVideo(bot, chatId, state, idx + 1, logicLoader, logicFilePath);
+                    } else {
+                        state.videos[levelKey] = msg.text;
+                        // Спрашиваем описание для этого уровня
+                        state.mode = "add_video_description";
+                        state.currentLevelKey = levelKey;
+                        adminStates.set(chatId, state);
+                        const levelData = getLimbLevelByIdx(idx);
+                        const limbName = levelData.limb === "legs" ? "Ноги" : "Руки";
+                        await bot.sendMessage(chatId,
+                            `✅ Ссылка на видео добавлена для ${limbName} - ${levelData.title}!\n\n` +
+                            `📝 Хотите добавить описание к этому видео?\n` +
+                            `Введите описание или \"-\" чтобы пропустить:`,
+                            { parse_mode: "Markdown" }
+                        );
+                    }
                 }
+                return;
+            }
+
+            // --- Ввод описания для видео при создании новой подтемы ---
+            if (state.mode === "add_video_description") {
+                const idx = state.videoIdx || 0;
+                if (!state.descriptions) state.descriptions = {};
+
+                if (msg.text !== "-") {
+                    state.descriptions[state.currentLevelKey] = msg.text;
+                }
+
+                // Переходим к следующему видео
+                await askNextVideo(bot, chatId, state, idx + 1, logicLoader, logicFilePath);
                 return;
             }
 

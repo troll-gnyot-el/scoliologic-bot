@@ -2,7 +2,7 @@
   "name": "popcorn-perspective-bot",
   "type": "module",
   "version": "1.0.0",
-  "description": "Created to help scoliologic's customers find the information about their problem (in video format)",
+  "description": "Created to help Scoliologic's customers find the information about their problem (in video format)",
   "main": "bot/index.js",
   "scripts": {
     "dev": "nodemon bot/index.js",

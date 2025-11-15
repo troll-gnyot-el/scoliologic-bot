@@ -84,6 +84,65 @@ export function generateAddNavigationButtons(subthemes) {
   }]);
 }
 
+export function generateDeleteNavigationButtons(subthemes) {
+  if (!subthemes || !Array.isArray(subthemes)) return [];
+  return subthemes.map(theme => [{
+    text: theme.title,
+    callback_data: `admin_delete_nav_${theme.id}`
+  }]);
+}
+
+// Вспомогательная функция для поиска родительской темы
+export function findParentTheme(themeId, themes, parent = null) {
+  if (!themes || !Array.isArray(themes)) return null;
+
+  for (const theme of themes) {
+    if (theme.id === themeId) {
+      return parent;
+    }
+    if (theme.subthemes && theme.subthemes.length > 0) {
+      const found = findParentTheme(themeId, theme.subthemes, theme);
+      if (found !== null) return found;
+    }
+  }
+  return null;
+}
+
+// Вспомогательная функция для построения информации об удалении
+export function buildDeleteInfo(theme, logicLoader) {
+  let info = `*Тема:* ${escapeMarkdownV2(theme.title)}\n`;
+  info += `*ID:* \`${escapeMarkdownV2(theme.id)}\`\n\n`;
+
+  // Подсчитываем видео
+  let videoCount = 0;
+  if (theme.videos_by_level) videoCount += Object.keys(theme.videos_by_level).length;
+  if (theme.files_by_level) videoCount += Object.keys(theme.files_by_level).length;
+  if (videoCount > 0) {
+    info += `🎬 *Видео:* ${videoCount}\n`;
+  }
+
+  // Подсчитываем подтемы (рекурсивно)
+  let subthemeCount = 0;
+  if (theme.subthemes && theme.subthemes.length > 0) {
+    subthemeCount = countSubthemes(theme.subthemes);
+    info += `📁 *Подтем:* ${subthemeCount}\n`;
+  }
+
+  return info;
+}
+
+// Рекурсивный подсчет подтем
+function countSubthemes(subthemes) {
+  if (!subthemes || !Array.isArray(subthemes)) return 0;
+  let count = subthemes.length;
+  for (const subtheme of subthemes) {
+    if (subtheme.subthemes && subtheme.subthemes.length > 0) {
+      count += countSubthemes(subtheme.subthemes);
+    }
+  }
+  return count;
+}
+
 export function buildStructureText(themes, level = 0, maxDepth = 3) {
   if (!themes || !Array.isArray(themes) || level > maxDepth) return "";
 
@@ -117,6 +176,7 @@ export async function askNextVideo(bot, chatId, state, idx, logicLoader, logicFi
   const allLevels = getAllLimbLevels();
 
   if (idx >= allLevels.length) {
+    // Все видео добавлены, сохраняем подтему
     await saveNewSubtheme(bot, chatId, state, logicLoader, logicFilePath);
     return;
   }
@@ -181,7 +241,7 @@ export function splitLongMessage(text, maxLength = 3500) {
   return parts;
 }
 
-async function saveNewSubtheme(bot, chatId, state, logicLoader, logicFilePath) {
+export async function saveNewSubtheme(bot, chatId, state, logicLoader, logicFilePath) {
   try {
     const logic = logicLoader.getLogic();
     if (!logic) {
@@ -199,6 +259,7 @@ async function saveNewSubtheme(bot, chatId, state, logicLoader, logicFilePath) {
 
     const videos_by_level = {};
     const files_by_level = {};
+    const description_by_level = {};
 
     if (state.videos) {
       Object.keys(state.videos).forEach(key => {
@@ -216,6 +277,14 @@ async function saveNewSubtheme(bot, chatId, state, logicLoader, logicFilePath) {
       });
     }
 
+    if (state.descriptions) {
+      Object.keys(state.descriptions).forEach(key => {
+        if (state.descriptions[key] && state.descriptions[key].trim() !== "" && state.descriptions[key] !== "-") {
+          description_by_level[key] = state.descriptions[key].trim();
+        }
+      });
+    }
+
     const newSubtheme = {
       id: `custom_${Date.now()}`,
       title: state.subthemeTitle,
@@ -229,6 +298,9 @@ async function saveNewSubtheme(bot, chatId, state, logicLoader, logicFilePath) {
     }
     if (Object.keys(files_by_level).length > 0) {
       newSubtheme.files_by_level = files_by_level;
+    }
+    if (Object.keys(description_by_level).length > 0) {
+      newSubtheme.description_by_level = description_by_level;
     }
 
     if (!parentTheme.subthemes) parentTheme.subthemes = [];
